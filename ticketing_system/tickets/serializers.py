@@ -7,7 +7,7 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'user_type')  # Include the fields you need
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'user_type')  # Include the fields you need
         read_only_fields = ('id',)  # id should not be modified
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -16,5 +16,5 @@ class TicketSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ticket
-        fields = ('id', 'title', 'description', 'status', 'created_by', 'assigned_to', 'created_at', 'updated_at')
+        fields = '__all__'  # Include all fields
         read_only_fields = ('id', 'created_at', 'updated_at', 'created_by')  # These fields should not be modified during create/update

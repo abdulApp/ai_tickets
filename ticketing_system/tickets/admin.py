@@ -4,6 +4,11 @@ from .models import User, Ticket
 
 # Register your models here.
 
+class CustomUserAdmin(UserAdmin):
+    fieldsets = UserAdmin.fieldsets + (
+        ('Role Info', {'fields': ('user_type',)}),
+    )
+
 class TicketAdmin(admin.ModelAdmin):
     list_display = ('title', 'status', 'created_by', 'assigned_to', 'created_at')
     list_filter = ('status', 'assigned_to', 'created_by')
