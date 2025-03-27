@@ -1,13 +1,16 @@
-from rest_framework import serializers
+from rest_framework import viewsets, serializers
+from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from .models import Ticket
 
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'user_type')  # Include the fields you need
+        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'user_type')  # Include the fields you need
         read_only_fields = ('id',)  # id should not be modified
 
 class TicketSerializer(serializers.ModelSerializer):

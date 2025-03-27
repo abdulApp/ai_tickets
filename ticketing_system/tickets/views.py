@@ -26,8 +26,8 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User
-        fields = ('username', 'email', 'password', 'first_name', 'last_name')
+            model = User
+            fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'user_type')
 
     def create(self, validated_data):
         password = validated_data.pop('password')
@@ -35,12 +35,18 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
 
-        if validated_data.get('user_type') == 'engineer':
-            engineer_group, created = Group.objects.get_or_create(name='Engineers')
-            user.groups.add(engineer_group)
-        elif validated_data.get('user_type') == 'admin':
+        # Assign to a group based on user_type
+        user_type = validated_data.get('user_type')  # Get user_type from validated_data
+        if user_type == 'engineer':
+                engineer_group, created = Group.objects.get_or_create(name='Engineers')
+                user.groups.add(engineer_group)
+        elif user_type == 'admin':
             admin_group, created = Group.objects.get_or_create(name='Admins')
             user.groups.add(admin_group)
+        else:
+            regular_group, created = Group.objects.get_or_create(name='Regulars')
+            user.groups.add(regular_group)
+        return user
         # else:
         #     regular_group, created = Group.objects.get_or_create(name='Regulars')
         #     user.groups.add(regular_group)
@@ -53,7 +59,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = []  # All users can view, but must be authenticated
+    # permission_classes = [IsAdminUser]  # All users can view, but must be authenticated
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
